@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">Mera Pratinidhi</string>
+    <string name="app_subtitle">Know your representatives.</string>
+    <string name="default_location">New Delhi, Delhi</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_representatives">Representatives</string>
+    <string name="nav_saved">Saved</string>
+    <string name="nav_profile">Profile</string>
+
+    <string name="find_your_representatives">Find Your Representatives</string>
+    <string name="find_reps_desc">Discover your Councillor, MLA and MP based on your location.</string>
+    <string name="view_my_representatives">View My Representatives</string>
+
+    <string name="your_representatives">Your Representatives</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="how_it_works">How it works</string>
+
+    <string name="step_1_title">01 Select location</string>
+    <string name="step_1_desc">Choose your area or ward</string>
+    <string name="step_2_title">02 Find your ward</string>
+    <string name="step_2_desc">Map your constituency</string>
+    <string name="step_3_title">03 Meet representatives</string>
+    <string name="step_3_desc">Contact your elected leaders</string>
+
+    <string name="search_representatives_hint">Search representatives...</string>
+    <string name="no_representatives_found">No representatives found</string>
+    <string name="no_representatives_desc">Try adjusting your search or filter options.</string>
+
+    <string name="saved_representatives">Saved Representatives</string>
+    <string name="saved_reps_subtitle">Your bookmarked representatives</string>
+    <string name="no_saved_representatives">No saved representatives</string>
+    <string name="no_saved_desc">Save representatives to quickly access them later.</string>
+    <string name="browse_representatives">Browse Representatives</string>
+
+    <string name="my_profile">My Profile</string>
+    <string name="guest_user">Guest User</string>
+    <string name="user_location">Delhi, India</string>
+
+    <string name="preferences">Preferences</string>
+    <string name="notifications">Notifications</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="language">Language</string>
+
+    <string name="location_section">Location</string>
+    <string name="current_area">Current Area</string>
+    <string name="change_location">Change Location</string>
+
+    <string name="app_info_section">App Information</string>
+    <string name="about_mera_pratinidhi">About Mera Pratinidhi</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="help_support">Help &amp; Support</string>
+    <string name="report_incorrect_info">Report Incorrect Information</string>
+
+    <string name="location_title">Find your representatives</string>
+    <string name="location_question">Where are you located?</string>
+    <string name="use_current_location">Use current location</string>
+    <string name="search_an_address">Search an address</string>
+    <string name="select_ward_manually">Select ward manually</string>
+
+    <string name="delhi_wards">Delhi Wards</string>
+    <string name="search_wards_hint">Search ward number or name...</string>
+
+    <string name="constituencies">Constituencies</string>
+    <string name="assembly">Assembly</string>
+    <string name="parliament">Parliament</string>
+
+    <string name="demo_feature_title">Demo Feature</string>
+    <string name="demo_feature_msg">This is a prototype demonstration feature.</string>
+</resources>
