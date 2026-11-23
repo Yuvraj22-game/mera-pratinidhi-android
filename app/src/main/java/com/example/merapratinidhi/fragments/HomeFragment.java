@@ -86,11 +86,11 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void setupFeaturedRepresentatives() {
+    private List<Representative> getFeaturedList() {
+        if (repository == null) return new ArrayList<>();
         List<Representative> allReps = repository.getAllRepresentatives();
         List<Representative> featured = new ArrayList<>();
 
-        // Pick 1 Councillor, 1 MLA, 1 MP for Home showcase
         Representative councillor = null, mla = null, mp = null;
         for (Representative r : allReps) {
             if (councillor == null && r.getType().equalsIgnoreCase("Councillor")) councillor = r;
@@ -102,22 +102,33 @@ public class HomeFragment extends Fragment {
         if (mla != null) featured.add(mla);
         if (mp != null) featured.add(mp);
 
-        adapter = new RepresentativeAdapter(featured, new RepresentativeAdapter.OnRepresentativeClickListener() {
-            @Override
-            public void onItemClick(Representative representative) {
-                Intent intent = new Intent(getContext(), RepresentativeDetailActivity.class);
-                intent.putExtra(RepresentativeDetailActivity.EXTRA_REP_ID, representative.getId());
-                startActivity(intent);
-            }
+        return featured;
+    }
 
-            @Override
-            public void onBookmarkClick(Representative representative, int position) {
-                repository.toggleSaveRepresentative(representative.getId());
-                setupFeaturedRepresentatives();
-            }
-        });
+    private void setupFeaturedRepresentatives() {
+        List<Representative> featured = getFeaturedList();
 
-        rvYourRepresentatives.setAdapter(adapter);
+        if (adapter == null) {
+            adapter = new RepresentativeAdapter(featured, new RepresentativeAdapter.OnRepresentativeClickListener() {
+                @Override
+                public void onItemClick(Representative representative) {
+                    Intent intent = new Intent(getContext(), RepresentativeDetailActivity.class);
+                    intent.putExtra(RepresentativeDetailActivity.EXTRA_REP_ID, representative.getId());
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onBookmarkClick(Representative representative, int position) {
+                    if (repository != null) {
+                        repository.toggleSaveRepresentative(representative.getId());
+                        setupFeaturedRepresentatives();
+                    }
+                }
+            });
+            rvYourRepresentatives.setAdapter(adapter);
+        } else {
+            adapter.updateList(featured);
+        }
     }
 
     @Override

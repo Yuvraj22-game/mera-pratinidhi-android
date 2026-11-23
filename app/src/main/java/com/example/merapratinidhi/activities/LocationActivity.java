@@ -24,15 +24,13 @@ import java.util.List;
 
 public class LocationActivity extends AppCompatActivity {
 
-    private ImageButton btnBack;
-    private View cardCurrentLocation, cardSearchAddress, cardSelectWard;
     private ProgressBar progressLoading;
     private View cardLocationResult;
 
     private TextView tvResultWard, tvResultAssembly, tvResultParliament;
-    private MaterialButton btnResultViewReps;
 
     private DataRepository repository;
+    private AlertDialog activeDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +40,10 @@ public class LocationActivity extends AppCompatActivity {
 
         repository = DataRepository.getInstance(this);
 
-        btnBack = findViewById(R.id.btn_back);
-        cardCurrentLocation = findViewById(R.id.card_option_current_location);
-        cardSearchAddress = findViewById(R.id.card_option_search_address);
-        cardSelectWard = findViewById(R.id.card_option_select_ward);
+        ImageButton btnBack = findViewById(R.id.btn_back);
+        View cardCurrentLocation = findViewById(R.id.card_option_current_location);
+        View cardSearchAddress = findViewById(R.id.card_option_search_address);
+        View cardSelectWard = findViewById(R.id.card_option_select_ward);
 
         progressLoading = findViewById(R.id.progress_loading);
         cardLocationResult = findViewById(R.id.card_location_result);
@@ -53,7 +51,7 @@ public class LocationActivity extends AppCompatActivity {
         tvResultWard = findViewById(R.id.tv_result_ward);
         tvResultAssembly = findViewById(R.id.tv_result_assembly);
         tvResultParliament = findViewById(R.id.tv_result_parliament);
-        btnResultViewReps = findViewById(R.id.btn_result_view_representatives);
+        MaterialButton btnResultViewReps = findViewById(R.id.btn_result_view_representatives);
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -86,12 +84,13 @@ public class LocationActivity extends AppCompatActivity {
     }
 
     private void showAddressSearchDialog() {
+        dismissActiveDialog();
         EditText input = new EditText(this);
         input.setHint("e.g. Rohini Sector 8, Pitampura, Laxmi Nagar");
         int padding = (int) (16 * getResources().getDisplayMetrics().density);
         input.setPadding(padding, padding, padding, padding);
 
-        new AlertDialog.Builder(this)
+        activeDialog = new AlertDialog.Builder(this)
                 .setTitle("Search Address")
                 .setView(input)
                 .setPositiveButton("Search", (dialog, which) -> {
@@ -100,26 +99,27 @@ public class LocationActivity extends AppCompatActivity {
                         address = "Rohini, New Delhi";
                     }
                     showLocationResult("Ward 61 — Kohat Enclave", "Shalimar Bagh", "North West Delhi");
-                    Toast.makeText(LocationActivity.this, "Location found for: " + address, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LocationActivity.this, getString(R.string.location_found_msg, address), Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
     }
 
     private void showWardSelectionDialog() {
+        dismissActiveDialog();
         List<Ward> wards = repository.getAllWards();
         String[] wardNames = new String[wards.size()];
         for (int i = 0; i < wards.size(); i++) {
             Ward w = wards.get(i);
-            wardNames[i] = "Ward " + w.getWardNumber() + " — " + w.getWardName();
+            wardNames[i] = getString(R.string.ward_title_format, w.getWardNumber(), w.getWardName());
         }
 
-        new AlertDialog.Builder(this)
+        activeDialog = new AlertDialog.Builder(this)
                 .setTitle("Select Delhi Ward")
                 .setItems(wardNames, (dialog, which) -> {
                     Ward selectedWard = wards.get(which);
                     showLocationResult(
-                            "Ward " + selectedWard.getWardNumber() + " — " + selectedWard.getWardName(),
+                            getString(R.string.ward_title_format, selectedWard.getWardNumber(), selectedWard.getWardName()),
                             selectedWard.getAssemblyConstituency(),
                             selectedWard.getParliamentaryConstituency()
                     );
@@ -130,8 +130,21 @@ public class LocationActivity extends AppCompatActivity {
 
     private void showLocationResult(String ward, String assembly, String parliament) {
         tvResultWard.setText(ward);
-        tvResultAssembly.setText("Assembly Constituency: " + assembly);
-        tvResultParliament.setText("Parliamentary Constituency: " + parliament);
+        tvResultAssembly.setText(getString(R.string.assembly_constituency_label, assembly));
+        tvResultParliament.setText(getString(R.string.parliamentary_constituency_label, parliament));
         cardLocationResult.setVisibility(View.VISIBLE);
+    }
+
+    private void dismissActiveDialog() {
+        if (activeDialog != null && activeDialog.isShowing()) {
+            activeDialog.dismiss();
+            activeDialog = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        dismissActiveDialog();
+        super.onDestroy();
     }
 }

@@ -3,11 +3,11 @@ package com.example.merapratinidhi.models;
 import java.io.Serializable;
 
 public class AssemblyConstituency implements Serializable {
-    private String id;
-    private String name;
-    private String mlaName;
-    private String parliamentaryConstituency;
-    private int wardCount;
+    private final String id;
+    private final String name;
+    private final String mlaName;
+    private final String parliamentaryConstituency;
+    private final int wardCount;
 
     public AssemblyConstituency(String id, String name, String mlaName,
                                 String parliamentaryConstituency, int wardCount) {

@@ -22,15 +22,14 @@ public class RepresentativeDetailActivity extends AppCompatActivity {
 
     public static final String EXTRA_REP_ID = "extra_rep_id";
 
-    private DataRepository repository;
     private Representative representative;
 
     private View avatarContainer;
     private TextView tvInitials, tvName, tvTypeBadge, tvPartyBadge, tvWardConstituency;
     private TextView tvJurisdiction, tvPhone, tvEmail, tvOffice, tvSource, tvVerified;
 
-    private ImageButton btnBack, btnShare, btnSaveTop;
-    private MaterialButton btnCall, btnEmail;
+    private ImageButton btnSaveTop;
+    private AlertDialog activeDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,7 @@ public class RepresentativeDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_representative_detail);
 
-        repository = DataRepository.getInstance(this);
+        DataRepository repository = DataRepository.getInstance(this);
 
         String repId = getIntent().getStringExtra(EXTRA_REP_ID);
         if (repId != null) {
@@ -51,11 +50,11 @@ public class RepresentativeDetailActivity extends AppCompatActivity {
             return;
         }
 
-        initViews();
+        initViews(repository);
         populateData();
     }
 
-    private void initViews() {
+    private void initViews(DataRepository repository) {
         avatarContainer = findViewById(R.id.detail_avatar_container);
         tvInitials = findViewById(R.id.tv_detail_initials);
         tvName = findViewById(R.id.tv_detail_name);
@@ -70,11 +69,11 @@ public class RepresentativeDetailActivity extends AppCompatActivity {
         tvSource = findViewById(R.id.tv_info_source);
         tvVerified = findViewById(R.id.tv_info_verified);
 
-        btnBack = findViewById(R.id.btn_back);
-        btnShare = findViewById(R.id.btn_share);
+        ImageButton btnBack = findViewById(R.id.btn_back);
+        ImageButton btnShare = findViewById(R.id.btn_share);
         btnSaveTop = findViewById(R.id.btn_save_top);
-        btnCall = findViewById(R.id.btn_action_call);
-        btnEmail = findViewById(R.id.btn_action_email);
+        MaterialButton btnCall = findViewById(R.id.btn_action_call);
+        MaterialButton btnEmail = findViewById(R.id.btn_action_email);
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -82,7 +81,12 @@ public class RepresentativeDetailActivity extends AppCompatActivity {
             Intent shareIntent = new Intent(Intent.ACTION_SEND);
             shareIntent.setType("text/plain");
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, representative.getName());
-            shareIntent.putExtra(Intent.EXTRA_TEXT, "Representative details for " + representative.getName() + " (" + representative.getType() + ", " + representative.getParty() + ") - " + representative.getWardOrConstituency());
+            String shareMsg = getString(R.string.share_text_format,
+                    representative.getName(),
+                    representative.getType(),
+                    representative.getParty(),
+                    representative.getWardOrConstituency());
+            shareIntent.putExtra(Intent.EXTRA_TEXT, shareMsg);
             startActivity(Intent.createChooser(shareIntent, "Share Representative"));
         });
 
@@ -90,25 +94,33 @@ public class RepresentativeDetailActivity extends AppCompatActivity {
             boolean isSavedNow = repository.toggleSaveRepresentative(representative.getId());
             representative.setSaved(isSavedNow);
             updateSaveIcon();
-            String message = isSavedNow ? representative.getName() + " saved to bookmarks" : representative.getName() + " removed from bookmarks";
+            String message = isSavedNow ?
+                    getString(R.string.saved_toast_format, representative.getName()) :
+                    getString(R.string.unsaved_toast_format, representative.getName());
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         });
 
-        btnCall.setOnClickListener(v -> new AlertDialog.Builder(this)
-                .setTitle("Call Representative (Demo)")
-                .setMessage("Initiate call to " + representative.getName() + " at " + representative.getPhone() + "?")
-                .setPositiveButton("Call", (dialog, which) ->
-                        Toast.makeText(this, "Simulating call to " + representative.getPhone(), Toast.LENGTH_SHORT).show())
-                .setNegativeButton("Cancel", null)
-                .show());
+        btnCall.setOnClickListener(v -> {
+            dismissActiveDialog();
+            activeDialog = new AlertDialog.Builder(this)
+                    .setTitle("Call Representative (Demo)")
+                    .setMessage(getString(R.string.call_confirm_msg, representative.getName(), representative.getPhone()))
+                    .setPositiveButton("Call", (dialog, which) ->
+                            Toast.makeText(this, "Simulating call to " + representative.getPhone(), Toast.LENGTH_SHORT).show())
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
 
-        btnEmail.setOnClickListener(v -> new AlertDialog.Builder(this)
-                .setTitle("Email Representative (Demo)")
-                .setMessage("Send official email to " + representative.getName() + " at " + representative.getEmail() + "?")
-                .setPositiveButton("Open Email", (dialog, which) ->
-                        Toast.makeText(this, "Simulating email to " + representative.getEmail(), Toast.LENGTH_SHORT).show())
-                .setNegativeButton("Cancel", null)
-                .show());
+        btnEmail.setOnClickListener(v -> {
+            dismissActiveDialog();
+            activeDialog = new AlertDialog.Builder(this)
+                    .setTitle("Email Representative (Demo)")
+                    .setMessage(getString(R.string.email_confirm_msg, representative.getName(), representative.getEmail()))
+                    .setPositiveButton("Open Email", (dialog, which) ->
+                            Toast.makeText(this, "Simulating email to " + representative.getEmail(), Toast.LENGTH_SHORT).show())
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
     }
 
     private void populateData() {
@@ -134,8 +146,8 @@ public class RepresentativeDetailActivity extends AppCompatActivity {
         tvPhone.setText(representative.getPhone());
         tvEmail.setText(representative.getEmail());
         tvOffice.setText(representative.getOfficeAddress());
-        tvSource.setText("Source: " + representative.getSource());
-        tvVerified.setText("Verified: " + representative.getVerifiedDate());
+        tvSource.setText(getString(R.string.source_format, representative.getSource()));
+        tvVerified.setText(getString(R.string.verified_format, representative.getVerifiedDate()));
 
         updateSaveIcon();
     }
@@ -148,5 +160,18 @@ public class RepresentativeDetailActivity extends AppCompatActivity {
             btnSaveTop.setImageResource(R.drawable.ic_bookmark_outlined);
             btnSaveTop.clearColorFilter();
         }
+    }
+
+    private void dismissActiveDialog() {
+        if (activeDialog != null && activeDialog.isShowing()) {
+            activeDialog.dismiss();
+            activeDialog = null;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        dismissActiveDialog();
+        super.onDestroy();
     }
 }

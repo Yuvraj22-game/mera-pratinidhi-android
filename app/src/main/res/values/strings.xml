@@ -23,7 +23,7 @@
     <string name="step_3_title">03 Meet representatives</string>
     <string name="step_3_desc">Contact your elected leaders</string>
 
-    <string name="search_representatives_hint">Search representatives...</string>
+    <string name="search_representatives_hint">Search representatives…</string>
     <string name="no_representatives_found">No representatives found</string>
     <string name="no_representatives_desc">Try adjusting your search or filter options.</string>
 
@@ -59,7 +59,7 @@
     <string name="select_ward_manually">Select ward manually</string>
 
     <string name="delhi_wards">Delhi Wards</string>
-    <string name="search_wards_hint">Search ward number or name...</string>
+    <string name="search_wards_hint">Search ward number or name…</string>
 
     <string name="constituencies">Constituencies</string>
     <string name="assembly">Assembly</string>
@@ -67,4 +67,26 @@
 
     <string name="demo_feature_title">Demo Feature</string>
     <string name="demo_feature_msg">This is a prototype demonstration feature.</string>
+
+    <!-- FORMAT STRINGS -->
+    <string name="councillor_format">Councillor: %1$s</string>
+    <string name="assembly_format">Assembly: %1$s</string>
+    <string name="mla_format">MLA: %1$s</string>
+    <string name="mp_format">MP: %1$s</string>
+    <string name="ward_title_format">Ward %1$d — %2$s</string>
+    <string name="ward_details_format">Assembly: %1$s • MP: %2$s</string>
+    <string name="assembly_title_format">%1$s Assembly</string>
+    <string name="assembly_sub_format">Parliament: %1$s • Wards: %2$d</string>
+    <string name="parliament_title_format">%1$s Constituency</string>
+    <string name="parliament_sub_format">Assembly Constituencies: %1$d</string>
+    <string name="source_format">Source: %1$s</string>
+    <string name="verified_format">Verified: %1$s</string>
+    <string name="call_confirm_msg">Initiate call to %1$s at %2$s?</string>
+    <string name="email_confirm_msg">Send official email to %1$s at %2$s?</string>
+    <string name="share_text_format">Representative details for %1$s (%2$s, %3$s) - %4$s</string>
+    <string name="saved_toast_format">%1$s saved to bookmarks</string>
+    <string name="unsaved_toast_format">%1$s removed from bookmarks</string>
+    <string name="assembly_constituency_label">Assembly Constituency: %1$s</string>
+    <string name="parliamentary_constituency_label">Parliamentary Constituency: %1$s</string>
+    <string name="location_found_msg">Location found for: %1$s</string>
 </resources>

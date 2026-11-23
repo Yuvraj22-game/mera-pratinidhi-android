@@ -3,12 +3,12 @@ package com.example.merapratinidhi.models;
 import java.io.Serializable;
 
 public class Ward implements Serializable {
-    private String id;
-    private int wardNumber;
-    private String wardName;
-    private String councillorName;
-    private String assemblyConstituency;
-    private String parliamentaryConstituency;
+    private final String id;
+    private final int wardNumber;
+    private final String wardName;
+    private final String councillorName;
+    private final String assemblyConstituency;
+    private final String parliamentaryConstituency;
 
     public Ward(String id, int wardNumber, String wardName, String councillorName,
                 String assemblyConstituency, String parliamentaryConstituency) {

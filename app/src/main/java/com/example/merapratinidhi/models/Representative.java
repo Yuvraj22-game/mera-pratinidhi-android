@@ -3,18 +3,18 @@ package com.example.merapratinidhi.models;
 import java.io.Serializable;
 
 public class Representative implements Serializable {
-    private String id;
-    private String name;
-    private String party;
-    private String type; // "Councillor", "MLA", "MP"
-    private String wardOrConstituency;
-    private String phone;
-    private String email;
-    private String officeAddress;
-    private String source;
-    private String verifiedDate;
-    private String initials;
-    private String avatarBgColor;
+    private final String id;
+    private final String name;
+    private final String party;
+    private final String type; // "Councillor", "MLA", "MP"
+    private final String wardOrConstituency;
+    private final String phone;
+    private final String email;
+    private final String officeAddress;
+    private final String source;
+    private final String verifiedDate;
+    private final String initials;
+    private final String avatarBgColor;
     private boolean isSaved;
 
     public Representative(String id, String name, String party, String type, String wardOrConstituency,

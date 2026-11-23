@@ -20,9 +20,9 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class ProfileFragment extends Fragment {
 
-    private SwitchMaterial switchNotifications;
     private SwitchMaterial switchDarkMode;
     private TextView tvCurrentLanguage;
+    private AlertDialog activeDialog;
 
     @Nullable
     @Override
@@ -36,7 +36,7 @@ public class ProfileFragment extends Fragment {
 
         if (getContext() == null) return;
 
-        switchNotifications = view.findViewById(R.id.switch_notifications);
+        SwitchMaterial switchNotifications = view.findViewById(R.id.switch_notifications);
         switchDarkMode = view.findViewById(R.id.switch_dark_mode);
         tvCurrentLanguage = view.findViewById(R.id.tv_current_language);
 
@@ -66,30 +66,31 @@ public class ProfileFragment extends Fragment {
 
         // App Info Rows
         view.findViewById(R.id.row_about).setOnClickListener(v -> showInfoDialog(
-                "About Mera Pratinidhi",
+                getString(R.string.about_mera_pratinidhi),
                 "Mera Pratinidhi is a civic-information platform designed to help Delhi residents easily discover their local MCD Ward Councillor, MLA, and Member of Parliament (MP).\n\nVersion: 1.0.0 (Prototype)\nDeveloped for College Project Demonstration."
         ));
 
         view.findViewById(R.id.row_privacy).setOnClickListener(v -> showInfoDialog(
-                "Privacy Policy",
+                getString(R.string.privacy_policy),
                 "Mera Pratinidhi respects user privacy. This application operates entirely offline with local mock data and does not collect or transmit any personal data or real GPS location."
         ));
 
         view.findViewById(R.id.row_help).setOnClickListener(v -> showInfoDialog(
-                "Help & Support",
+                getString(R.string.help_support),
                 "For inquiries, bug reports, or feedback regarding Mera Pratinidhi prototype:\n\nEmail: support@merapratinidhi.delhi\nWebsite: www.merapratinidhi.in"
         ));
 
         view.findViewById(R.id.row_report).setOnClickListener(v -> showInfoDialog(
-                "Report Incorrect Information",
+                getString(R.string.report_incorrect_info),
                 "Notice an inaccuracy in Councillor, MLA, or MP records?\n\nPlease report data updates to update@merapratinidhi.delhi with official state election commission references."
         ));
     }
 
     private void showLanguageDialog() {
         if (getContext() == null) return;
+        dismissActiveDialog();
         String[] languages = {"English", "हिंदी (Hindi)", "ਪੰਜਾਬੀ (Punjabi)"};
-        new AlertDialog.Builder(getContext())
+        activeDialog = new AlertDialog.Builder(getContext())
                 .setTitle("Select Language")
                 .setItems(languages, (dialog, which) -> {
                     String selected = languages[which].split(" ")[0];
@@ -102,10 +103,24 @@ public class ProfileFragment extends Fragment {
 
     private void showInfoDialog(String title, String message) {
         if (getContext() == null) return;
-        new AlertDialog.Builder(getContext())
+        dismissActiveDialog();
+        activeDialog = new AlertDialog.Builder(getContext())
                 .setTitle(title)
                 .setMessage(message)
                 .setPositiveButton("OK", null)
                 .show();
+    }
+
+    private void dismissActiveDialog() {
+        if (activeDialog != null && activeDialog.isShowing()) {
+            activeDialog.dismiss();
+            activeDialog = null;
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        dismissActiveDialog();
+        super.onDestroyView();
     }
 }

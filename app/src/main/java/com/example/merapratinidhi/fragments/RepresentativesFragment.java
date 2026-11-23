@@ -25,10 +25,14 @@ import com.example.merapratinidhi.activities.RepresentativeDetailActivity;
 import com.example.merapratinidhi.adapters.RepresentativeAdapter;
 import com.example.merapratinidhi.data.DataRepository;
 import com.example.merapratinidhi.models.Representative;
+import com.example.merapratinidhi.viewmodels.RepresentativesViewModel;
 
 import java.util.List;
 
 public class RepresentativesFragment extends Fragment {
+
+    private static final String KEY_SEARCH_QUERY = "key_search_query";
+    private static final String KEY_FILTER_TYPE = "key_filter_type";
 
     private RecyclerView rvRepresentatives;
     private View layoutEmptyState;
@@ -38,10 +42,7 @@ public class RepresentativesFragment extends Fragment {
     private Button chipAll, chipCouncillors, chipMlas, chipMps;
 
     private RepresentativeAdapter adapter;
-    private DataRepository repository;
-
-    private String currentSearchQuery = "";
-    private String currentFilterType = "All";
+    private RepresentativesViewModel viewModel;
 
     @Nullable
     @Override
@@ -54,7 +55,14 @@ public class RepresentativesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (getContext() == null) return;
-        repository = DataRepository.getInstance(getContext());
+
+        viewModel = new RepresentativesViewModel();
+        viewModel.init(DataRepository.getInstance(getContext()));
+
+        if (savedInstanceState != null) {
+            viewModel.setSearchQuery(savedInstanceState.getString(KEY_SEARCH_QUERY, ""));
+            viewModel.setFilterType(savedInstanceState.getString(KEY_FILTER_TYPE, "All"));
+        }
 
         rvRepresentatives = view.findViewById(R.id.rv_representatives);
         layoutEmptyState = view.findViewById(R.id.layout_empty_state);
@@ -70,20 +78,35 @@ public class RepresentativesFragment extends Fragment {
 
         setupFilterChips();
         setupSearch();
+
+        if (!viewModel.getSearchQuery().isEmpty()) {
+            etSearch.setText(viewModel.getSearchQuery());
+            btnClearSearch.setVisibility(View.VISIBLE);
+        }
+
         filterAndRefreshData();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (viewModel != null) {
+            outState.putString(KEY_SEARCH_QUERY, viewModel.getSearchQuery());
+            outState.putString(KEY_FILTER_TYPE, viewModel.getFilterType());
+        }
     }
 
     private void setupFilterChips() {
         View.OnClickListener filterClickListener = v -> {
             int id = v.getId();
             if (id == R.id.chip_all) {
-                currentFilterType = "All";
+                viewModel.setFilterType("All");
             } else if (id == R.id.chip_councillors) {
-                currentFilterType = "Councillors";
+                viewModel.setFilterType("Councillors");
             } else if (id == R.id.chip_mlas) {
-                currentFilterType = "MLAs";
+                viewModel.setFilterType("MLAs");
             } else if (id == R.id.chip_mps) {
-                currentFilterType = "MPs";
+                viewModel.setFilterType("MPs");
             }
             updateChipStyles();
             filterAndRefreshData();
@@ -104,10 +127,11 @@ public class RepresentativesFragment extends Fragment {
         int activeText = Color.WHITE;
         int inactiveText = ContextCompat.getColor(getContext(), R.color.text_secondary);
 
-        setChipState(chipAll, currentFilterType.equalsIgnoreCase("All"), activeBg, inactiveBg, activeText, inactiveText);
-        setChipState(chipCouncillors, currentFilterType.equalsIgnoreCase("Councillors"), activeBg, inactiveBg, activeText, inactiveText);
-        setChipState(chipMlas, currentFilterType.equalsIgnoreCase("MLAs"), activeBg, inactiveBg, activeText, inactiveText);
-        setChipState(chipMps, currentFilterType.equalsIgnoreCase("MPs"), activeBg, inactiveBg, activeText, inactiveText);
+        String currentFilter = viewModel.getFilterType();
+        setChipState(chipAll, currentFilter.equalsIgnoreCase("All"), activeBg, inactiveBg, activeText, inactiveText);
+        setChipState(chipCouncillors, currentFilter.equalsIgnoreCase("Councillors"), activeBg, inactiveBg, activeText, inactiveText);
+        setChipState(chipMlas, currentFilter.equalsIgnoreCase("MLAs"), activeBg, inactiveBg, activeText, inactiveText);
+        setChipState(chipMps, currentFilter.equalsIgnoreCase("MPs"), activeBg, inactiveBg, activeText, inactiveText);
     }
 
     private void setChipState(Button button, boolean isSelected, int activeBg, int inactiveBg, int activeText, int inactiveText) {
@@ -122,8 +146,9 @@ public class RepresentativesFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                currentSearchQuery = s.toString();
-                btnClearSearch.setVisibility(currentSearchQuery.isEmpty() ? View.GONE : View.VISIBLE);
+                String query = s.toString();
+                viewModel.setSearchQuery(query);
+                btnClearSearch.setVisibility(query.isEmpty() ? View.GONE : View.VISIBLE);
                 filterAndRefreshData();
             }
 
@@ -135,7 +160,8 @@ public class RepresentativesFragment extends Fragment {
     }
 
     private void filterAndRefreshData() {
-        List<Representative> filteredList = repository.filterRepresentatives(currentSearchQuery, currentFilterType);
+        if (viewModel == null) return;
+        List<Representative> filteredList = viewModel.getFilteredRepresentatives();
 
         if (filteredList.isEmpty()) {
             rvRepresentatives.setVisibility(View.GONE);
@@ -156,8 +182,10 @@ public class RepresentativesFragment extends Fragment {
 
                 @Override
                 public void onBookmarkClick(Representative representative, int position) {
-                    repository.toggleSaveRepresentative(representative.getId());
-                    filterAndRefreshData();
+                    if (getContext() != null) {
+                        DataRepository.getInstance(getContext()).toggleSaveRepresentative(representative.getId());
+                        filterAndRefreshData();
+                    }
                 }
             });
             rvRepresentatives.setAdapter(adapter);

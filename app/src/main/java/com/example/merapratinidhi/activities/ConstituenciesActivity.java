@@ -24,7 +24,6 @@ import java.util.List;
 
 public class ConstituenciesActivity extends AppCompatActivity {
 
-    private ImageButton btnBack;
     private Button btnTabAssembly, btnTabParliament;
     private RecyclerView rvConstituencies;
 
@@ -40,7 +39,7 @@ public class ConstituenciesActivity extends AppCompatActivity {
 
         repository = DataRepository.getInstance(this);
 
-        btnBack = findViewById(R.id.btn_back);
+        ImageButton btnBack = findViewById(R.id.btn_back);
         btnTabAssembly = findViewById(R.id.btn_tab_assembly);
         btnTabParliament = findViewById(R.id.btn_tab_parliament);
         rvConstituencies = findViewById(R.id.rv_constituencies);

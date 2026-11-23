@@ -3,10 +3,10 @@ package com.example.merapratinidhi.models;
 import java.io.Serializable;
 
 public class ParliamentaryConstituency implements Serializable {
-    private String id;
-    private String name;
-    private String mpName;
-    private int assemblyCount;
+    private final String id;
+    private final String name;
+    private final String mpName;
+    private final int assemblyCount;
 
     public ParliamentaryConstituency(String id, String name, String mpName, int assemblyCount) {
         this.id = id;

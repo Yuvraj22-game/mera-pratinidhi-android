@@ -1,5 +1,6 @@
 package com.example.merapratinidhi.adapters;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,21 +25,23 @@ public class ConstituencyAdapter extends RecyclerView.Adapter<ConstituencyAdapte
     }
 
     private boolean isAssemblyMode = true;
-    private List<AssemblyConstituency> assemblyList;
-    private List<ParliamentaryConstituency> parliamentaryList;
+    private final List<AssemblyConstituency> assemblyList;
+    private final List<ParliamentaryConstituency> parliamentaryList;
     private final OnConstituencyClickListener listener;
 
     public ConstituencyAdapter(List<AssemblyConstituency> assemblyList,
                                List<ParliamentaryConstituency> parliamentaryList,
                                OnConstituencyClickListener listener) {
-        this.assemblyList = assemblyList != null ? assemblyList : new ArrayList<>();
-        this.parliamentaryList = parliamentaryList != null ? parliamentaryList : new ArrayList<>();
+        this.assemblyList = assemblyList != null ? new ArrayList<>(assemblyList) : new ArrayList<>();
+        this.parliamentaryList = parliamentaryList != null ? new ArrayList<>(parliamentaryList) : new ArrayList<>();
         this.listener = listener;
     }
 
     public void setMode(boolean assemblyMode) {
-        this.isAssemblyMode = assemblyMode;
-        notifyDataSetChanged();
+        if (this.isAssemblyMode != assemblyMode) {
+            this.isAssemblyMode = assemblyMode;
+            notifyDataSetChanged();
+        }
     }
 
     @NonNull
@@ -50,12 +53,14 @@ public class ConstituencyAdapter extends RecyclerView.Adapter<ConstituencyAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Context context = holder.itemView.getContext();
+
         if (isAssemblyMode) {
             AssemblyConstituency ac = assemblyList.get(position);
             holder.ivIcon.setImageResource(R.drawable.ic_assembly);
-            holder.tvTitle.setText(ac.getName() + " Assembly");
-            holder.tvLeader.setText("MLA: " + ac.getMlaName());
-            holder.tvSub.setText("Parliament: " + ac.getParliamentaryConstituency() + " • Wards: " + ac.getWardCount());
+            holder.tvTitle.setText(context.getString(R.string.assembly_title_format, ac.getName()));
+            holder.tvLeader.setText(context.getString(R.string.mla_format, ac.getMlaName()));
+            holder.tvSub.setText(context.getString(R.string.assembly_sub_format, ac.getParliamentaryConstituency(), ac.getWardCount()));
 
             holder.itemView.setOnClickListener(v -> {
                 if (listener != null) {
@@ -65,9 +70,9 @@ public class ConstituencyAdapter extends RecyclerView.Adapter<ConstituencyAdapte
         } else {
             ParliamentaryConstituency pc = parliamentaryList.get(position);
             holder.ivIcon.setImageResource(R.drawable.ic_parliament);
-            holder.tvTitle.setText(pc.getName() + " Constituency");
-            holder.tvLeader.setText("MP: " + pc.getMpName());
-            holder.tvSub.setText("Assembly Constituencies: " + pc.getAssemblyCount());
+            holder.tvTitle.setText(context.getString(R.string.parliament_title_format, pc.getName()));
+            holder.tvLeader.setText(context.getString(R.string.mp_format, pc.getMpName()));
+            holder.tvSub.setText(context.getString(R.string.parliament_sub_format, pc.getAssemblyCount()));
 
             holder.itemView.setOnClickListener(v -> {
                 if (listener != null) {

@@ -26,7 +26,6 @@ public class SavedFragment extends Fragment {
 
     private RecyclerView rvSavedRepresentatives;
     private View layoutEmptySaved;
-    private Button btnBrowseRepresentatives;
 
     private RepresentativeAdapter adapter;
     private DataRepository repository;
@@ -46,7 +45,7 @@ public class SavedFragment extends Fragment {
 
         rvSavedRepresentatives = view.findViewById(R.id.rv_saved_representatives);
         layoutEmptySaved = view.findViewById(R.id.layout_empty_saved);
-        btnBrowseRepresentatives = view.findViewById(R.id.btn_browse_representatives);
+        Button btnBrowseRepresentatives = view.findViewById(R.id.btn_browse_representatives);
 
         rvSavedRepresentatives.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -60,6 +59,7 @@ public class SavedFragment extends Fragment {
     }
 
     private void loadSavedData() {
+        if (repository == null) return;
         List<Representative> savedList = repository.getSavedRepresentatives();
 
         if (savedList.isEmpty()) {
@@ -81,8 +81,10 @@ public class SavedFragment extends Fragment {
 
                 @Override
                 public void onBookmarkClick(Representative representative, int position) {
-                    repository.toggleSaveRepresentative(representative.getId());
-                    loadSavedData();
+                    if (repository != null) {
+                        repository.toggleSaveRepresentative(representative.getId());
+                        loadSavedData();
+                    }
                 }
             });
             rvSavedRepresentatives.setAdapter(adapter);

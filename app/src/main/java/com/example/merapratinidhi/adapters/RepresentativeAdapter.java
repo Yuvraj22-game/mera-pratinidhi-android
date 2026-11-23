@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.merapratinidhi.R;
@@ -28,13 +29,42 @@ public class RepresentativeAdapter extends RecyclerView.Adapter<RepresentativeAd
     private final OnRepresentativeClickListener listener;
 
     public RepresentativeAdapter(List<Representative> representativeList, OnRepresentativeClickListener listener) {
-        this.representativeList = representativeList != null ? representativeList : new ArrayList<>();
+        this.representativeList = representativeList != null ? new ArrayList<>(representativeList) : new ArrayList<>();
         this.listener = listener;
     }
 
     public void updateList(List<Representative> newList) {
-        this.representativeList = newList != null ? newList : new ArrayList<>();
-        notifyDataSetChanged();
+        List<Representative> safeNewList = newList != null ? newList : new ArrayList<>();
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return representativeList.size();
+            }
+
+            @Override
+            public int getNewListSize() {
+                return safeNewList.size();
+            }
+
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                return representativeList.get(oldItemPosition).getId()
+                        .equals(safeNewList.get(newItemPosition).getId());
+            }
+
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                Representative oldRep = representativeList.get(oldItemPosition);
+                Representative newRep = safeNewList.get(newItemPosition);
+                return oldRep.isSaved() == newRep.isSaved()
+                        && oldRep.getName().equals(newRep.getName())
+                        && oldRep.getParty().equals(newRep.getParty())
+                        && oldRep.getWardOrConstituency().equals(newRep.getWardOrConstituency());
+            }
+        });
+
+        this.representativeList = new ArrayList<>(safeNewList);
+        diffResult.dispatchUpdatesTo(this);
     }
 
     @NonNull

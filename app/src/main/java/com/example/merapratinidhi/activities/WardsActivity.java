@@ -24,7 +24,6 @@ import java.util.List;
 
 public class WardsActivity extends AppCompatActivity {
 
-    private ImageButton btnBack;
     private EditText etSearch;
     private ImageView btnClearSearch;
     private RecyclerView rvWards;
@@ -40,7 +39,7 @@ public class WardsActivity extends AppCompatActivity {
 
         repository = DataRepository.getInstance(this);
 
-        btnBack = findViewById(R.id.btn_back);
+        ImageButton btnBack = findViewById(R.id.btn_back);
         etSearch = findViewById(R.id.et_search_ward);
         btnClearSearch = findViewById(R.id.btn_clear_search_ward);
         rvWards = findViewById(R.id.rv_wards);
@@ -77,7 +76,6 @@ public class WardsActivity extends AppCompatActivity {
 
         if (adapter == null) {
             adapter = new WardAdapter(wardList, ward -> {
-                // Find matching councillor if exists
                 List<Representative> reps = repository.getAllRepresentatives();
                 Representative targetRep = null;
                 for (Representative r : reps) {
